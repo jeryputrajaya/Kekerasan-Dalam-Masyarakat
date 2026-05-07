@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kekerasan Dalam Masyarakat</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Epilogue:wght@300;400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --red: #c0392b;
+    --red2: #e74c3c;
+    --red-glow: rgba(192,57,43,0.15);
+    --white: #f0ede8;
+    --off: #b8b4ae;
+    --muted: #5a5652;
+    --border: rgba(240,237,232,0.08);
+    --border-red: rgba(192,57,43,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Epilogue', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* PROGRESS BAR */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--red);
+    z-index: 999;
+    width: 0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 12px var(--red);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.98), transparent);
+  }
+  .nav-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+  }
+  .nav-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    border: 1px solid var(--border-red);
+    padding: 5px 12px;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero-bg canvas { width: 100%; height: 100%; }
+
+  .hero-inner { position: relative; z-index: 1; max-width: 900px; }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.3s ease forwards;
+  }
+
+  .hero-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s ease forwards;
+  }
+  .hero-headline span { color: var(--red); }
+
+  .hero-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--off);
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 0 auto 50px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s ease forwards;
+    border-left: 2px solid var(--red);
+    padding-left: 24px;
+    text-align: left;
+  }
+
+  .hero-scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeIn 1s 1.4s ease forwards;
+  }
+  .scroll-arrow {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--red), transparent);
+    animation: scrollDown 1.5s infinite;
+  }
+  .scroll-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* CONTENT SECTIONS */
+  .section {
+    position: relative;
+    padding: 100px 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* CHAPTER MARKER */
+  .chapter-marker {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .chapter-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--red);
+    opacity: 0.25;
+  }
+  .chapter-line { flex: 1; height: 1px; background: var(--border); }
+  .chapter-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* STATEMENT BLOCKS */
+  .statement {
+    margin-bottom: 56px;
+  }
+
+  .statement-lead {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .statement-lead em { color: var(--red); font-style: italic; }
+  .statement-lead .hl {
+    background: var(--red);
+    color: var(--white);
+    padding: 0 6px;
+    font-style: normal;
+  }
+
+  .statement-body {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--off);
+  }
+  .statement-body strong { color: var(--white); font-weight: 500; }
+
+  /* BIG PULL QUOTE */
+  .pull-quote {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 60px 0;
+    position: relative;
+  }
+  .pull-quote::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: var(--red);
+    opacity: 0.2;
+    position: absolute;
+    top: 0; left: -20px;
+    line-height: 1;
+  }
+  .pull-quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--white);
+    padding-left: 20px;
+  }
+
+  /* FULLWIDTH IMPACT */
+  .impact-section {
+    background: var(--red);
+    padding: 100px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .impact-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(0,0,0,0.05) 40px,
+      rgba(0,0,0,0.05) 80px
+    );
+  }
+  .impact-text {
+    position: relative;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+    color: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .impact-sub {
+    position: relative;
+    font-size: 1rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.75);
+    margin-top: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* LIST CARDS */
+  .list-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 40px 0;
+  }
+  .list-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 28px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .list-card:hover {
+    border-color: var(--border-red);
+    background: rgba(192,57,43,0.05);
+  }
+  .list-card-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .list-card-text {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--off);
+  }
+  .list-card-text strong { color: var(--white); font-weight: 500; }
+
+  /* WARNING BOX */
+  .warning-box {
+    border: 1px solid var(--border-red);
+    border-left: 4px solid var(--red);
+    background: var(--red-glow);
+    padding: 32px 36px;
+    margin: 48px 0;
+  }
+  .warning-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .warning-text {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--off);
+  }
+  .warning-text strong { color: var(--white); }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-red), transparent);
+    margin: 80px 0;
+  }
+
+  /* CALL TO ACTION FINALE */
+  .finale {
+    padding: 120px 40px;
+    text-align: center;
+    background: var(--bg2);
+    position: relative;
+    overflow: hidden;
+  }
+  .finale::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(192,57,43,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .finale-inner { position: relative; max-width: 680px; margin: 0 auto; }
+
+  .finale-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+  }
+  .finale-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 32px;
+  }
+  .finale-title em { color: var(--red); font-style: italic; }
+  .finale-body {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--off);
+    margin-bottom: 48px;
+  }
+  .finale-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+  }
+  .btn-red {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-red:hover {
+    background: var(--red2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(192,57,43,0.4);
+  }
+  .btn-outline-white {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--white);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(240,237,232,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-outline-white:hover {
+    border-color: var(--white);
+    background: rgba(240,237,232,0.05);
+  }
+
+  /* HOTLINE */
+  .hotline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    text-align: left;
+  }
+  .hotline-card {
+    padding: 24px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .hotline-name {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .hotline-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    color: var(--red);
+  }
+  .hotline-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-text { font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+  .footer-stamp {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    color: var(--red);
+  }
+
+  /* REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scrollDown {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* GRAIN */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 500;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .container { padding: 0 24px; }
+    footer { padding: 30px 24px; flex-direction: column; text-align: center; }
+    .finale { padding: 80px 24px; }
+    .impact-section { padding: 80px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <div class="nav-title">Kekerasan Dalam Masyarakat</div>
+  <div class="nav-tag">⚠ Kesadaran Sosial</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="hero-canvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Kampanye Kesadaran Sosial</div>
+    <h1 class="hero-headline">
+      KEKE<span>RA</span>SAN<br>DALAM<br>MASYARAKAT
+    </h1>
+    <blockquote class="hero-quote">
+      "Kalau kamu pernah dipaksa… itu bukan bercanda.<br>
+      Itu <strong style="color:var(--red);font-style:normal;">kekerasan.</strong>"
+    </blockquote>
+    <div class="hero-scroll-hint">
+      <div class="scroll-arrow"></div>
+      <span class="scroll-label">Baca Selengkapnya</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1: REALITA -->
+<section class="section">
+  <div class="container">
+    <div class="chapter-marker reveal">
+      <div class="chapter-num">01</div>
+      <div class="chapter-line"></div>
+      <div class="chapter-label">Realita yang Tersembunyi</div>
+    </div>
+
+    <div class="statement reveal">
+      <div class="statement-lead">
+        Masalahnya… banyak orang <em>tidak sadar.</em>
+      </div>
+      <div class="statement-body">
+        Karena kekerasan tidak selalu terlihat. Dan sering banget disembunyikan di balik kata-kata yang terasa biasa — seperti <strong>"cuma bercanda"</strong>, "lebay", atau "terlalu sensitif."
+      </div>
+    </div>
+
+    <div class="statement reveal reveal-delay-1">
+      <div class="statement-lead">
+        Kita sering berpikir kekerasan itu hanya soal <em>pukulan.</em>
+      </div>
+      <div class="statement-body">
+        Padahal kenyataannya jauh lebih luas dari itu. Kekerasan hadir dalam banyak bentuk — dan tidak semua meninggalkan bekas yang terlihat.
+      </div>
+    </div>
+
+    <div class="pull-quote reveal">
+      <div class="pull-quote-text">
+        "Hal-hal kecil yang sering dianggap biasa…<br>
+        padahal… <strong style="color:var(--red);">itu tidak normal.</strong>"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT 1 -->
+<div class="impact-section">
+  <div class="impact-text reveal">
+    KEKERASAN TIDAK SELALU<br>MENINGGALKAN BEKAS YANG TERLIHAT
+  </div>
+  <div class="impact-sub reveal reveal-delay-1">— tapi luka di dalam bisa jauh lebih dalam —</div>
+</div>
+
+<!-- SECTION 2: BENTUK KEKERASAN -->
+<section class="section">
+  <div class="container">
+    <div class="chapter-marker reveal">
+      <div class="chapter-num">02</div>
+      <div class="chapter-line"></div>
+      <div class="chapter-label">Wujud Kekerasan</div>
+    </div>
+
+    <div class="statement reveal">
+      <div class="statement-lead">Kekerasan bisa berupa <em>kata-kata</em></div>
+      <div class="statement-body">Sesuatu yang terucap pun bisa menjadi senjata yang melukai. Hinaan, bentakan, merendahkan orang lain — semua itu adalah bentuk nyata dari kekerasan.</div>
+    </div>
+
+    <div class="list-cards">
+      <div class="list-card reveal">
+        <div class="list-card-icon">🗣️</div>
+        <div class="list-card-text"><strong>Kekerasan Verbal</strong> — Hinaan, bentakan, merendahkan, mempermalukan seseorang di depan umum atau secara pribadi.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-1">
+        <div class="list-card-icon">🤚</div>
+        <div class="list-card-text"><strong>Kekerasan Fisik & Kontrol</strong> — Memaksa, mengontrol perilaku orang lain, intimidasi, atau tindakan yang membatasi kebebasan seseorang.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-2">
+        <div class="list-card-icon">⚠️</div>
+        <div class="list-card-text"><strong>Kekerasan Seksual</strong> — Sentuhan tanpa izin, komentar yang menjurus, lelucon seksual, atau pesan yang membuat tidak nyaman. Ini bukan "bercanda." Ini kekerasan.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-3">
+        <div class="list-card-icon">💬</div>
+        <div class="list-card-text"><strong>Kekerasan Digital</strong> — Chat yang mengganggu, penyebaran konten tanpa izin, cyberbullying, atau komentar online yang merendahkan.</div>
+      </div>
+    </div>
+
+    <div class="warning-box reveal">
+      <div class="warning-label">⚠ Perlu Dipahami</div>
+      <div class="warning-text">
+        Belakangan ini kita sering melihat kasus kekerasan seksual di Indonesia. Dan yang paling miris — banyak terjadi di tempat yang <strong>seharusnya aman.</strong> Di lingkungan pertemanan, di kampus, bahkan di sekitar kita sendiri.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SECTION 3: PELAKU -->
+<section class="section">
+  <div class="container">
+    <div class="chapter-marker reveal">
+      <div class="chapter-num">03</div>
+      <div class="chapter-line"></div>
+      <div class="chapter-label">Fakta yang Mengejutkan</div>
+    </div>
+
+    <div class="statement reveal">
+      <div class="statement-lead">
+        Pelakunya sering bukan <em>orang asing.</em>
+      </div>
+      <div class="statement-body">
+        Tapi orang yang kita kenal. Teman dekat, rekan kuliah, bahkan orang yang kita percaya. Dan itu yang membuat banyak korban memilih <strong>diam.</strong>
+      </div>
+    </div>
+
+    <div class="list-cards">
+      <div class="list-card reveal">
+        <div class="list-card-icon">😶</div>
+        <div class="list-card-text">Diam karena <strong>takut</strong> — tidak tahu apa yang akan terjadi jika bersuara.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-1">
+        <div class="list-card-icon">😕</div>
+        <div class="list-card-text">Diam karena <strong>bingung</strong> — apakah ini benar-benar salah? Atau memang "wajar"?</div>
+      </div>
+      <div class="list-card reveal reveal-delay-2">
+        <div class="list-card-icon">💔</div>
+        <div class="list-card-text">Diam karena merasa <strong>tidak akan dipercaya</strong> — dan itu membuat luka semakin dalam.</div>
+      </div>
+    </div>
+
+    <div class="pull-quote reveal">
+      <div class="pull-quote-text">
+        "Diam tidak akan menghentikan kekerasan.<br>
+        Yang menghentikannya adalah <strong style="color:var(--red);">keberanian untuk berbicara.</strong>"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT 2 -->
+<div class="impact-section">
+  <div class="impact-text reveal">
+    SEMUA HAL HARUS BERDASARKAN<br>PERSETUJUAN
+  </div>
+  <div class="impact-sub reveal reveal-delay-1">Kalau tidak ada izin — <strong>itu salah.</strong><br>Tidak peduli itu teman, pasangan, atau siapa pun.</div>
+</div>
+
+<!-- SECTION 4: CONSENT & VALIDASI -->
+<section class="section">
+  <div class="container">
+    <div class="chapter-marker reveal">
+      <div class="chapter-num">04</div>
+      <div class="chapter-line"></div>
+      <div class="chapter-label">Yang Harus Kamu Tahu</div>
+    </div>
+
+    <div class="statement reveal">
+      <div class="statement-lead">
+        <span class="hl">Perasaanmu itu valid.</span>
+      </div>
+      <div class="statement-body">
+        Kalau kamu pernah merasa tidak nyaman — itu bukan lebay. Bukan terlalu sensitif. Itu sinyal dari dirimu sendiri bahwa ada sesuatu yang tidak benar. Dan kamu <strong>berhak untuk bersuara.</strong>
+      </div>
+    </div>
+
+    <div class="list-cards">
+      <div class="list-card reveal">
+        <div class="list-card-icon">✅</div>
+        <div class="list-card-text"><strong>Kamu berhak bilang TIDAK</strong> — kepada siapa pun, dalam situasi apa pun, tanpa perlu merasa bersalah.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-1">
+        <div class="list-card-icon">✅</div>
+        <div class="list-card-text"><strong>Persetujuan itu wajib</strong> — bukan pilihan. Dan ia bisa dicabut kapan saja.</div>
+      </div>
+      <div class="list-card reveal reveal-delay-2">
+        <div class="list-card-icon">✅</div>
+        <div class="list-card-text"><strong>Kamu tidak sendirian</strong> — ada orang dan lembaga yang siap membantu, mendengarkan, dan mempercayaimu.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE: CALL TO ACTION -->
+<section class="finale">
+  <div class="finale-inner">
+    <div class="finale-tag reveal">Saatnya Bergerak</div>
+    <h2 class="finale-title reveal">
+      Jangan <em>Diam.</em><br>Berani Bicara.<br>Cari Bantuan.
+    </h2>
+    <p class="finale-body reveal">
+      Kalau kamu melihat atau mengalami kekerasan — laporkan. Diam hanya memberi ruang bagi kekerasan untuk terus terjadi. Satu suara bisa menyelamatkan satu kehidupan.
+    </p>
+    <div class="finale-actions reveal">
+      <a href="tel:119" class="btn-red">📞 Hubungi Hotline 119</a>
+      <a href="#hotline" class="btn-outline-white">Lihat Kontak Bantuan ↓</a>
+    </div>
+
+    <div id="hotline" class="hotline-grid reveal">
+      <div class="hotline-card">
+        <div class="hotline-name">Hotline Kemenkes</div>
+        <div class="hotline-num">119 ext 8</div>
+        <div class="hotline-desc">Layanan kesehatan jiwa & kekerasan, 24 jam</div>
+      </div>
+      <div class="hotline-card">
+        <div class="hotline-name">Komnas Perempuan</div>
+        <div class="hotline-num">021-3903963</div>
+        <div class="hotline-desc">Pengaduan kekerasan terhadap perempuan</div>
+      </div>
+      <div class="hotline-card">
+        <div class="hotline-name">SAPA 129</div>
+        <div class="hotline-num">129</div>
+        <div class="hotline-desc">Layanan perlindungan anak & perempuan — Kemensos RI</div>
+      </div>
+      <div class="hotline-card">
+        <div class="hotline-name">Into The Light</div>
+        <div class="hotline-num">021-7884-5555</div>
+        <div class="hotline-desc">Dukungan kesehatan mental & krisis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-text">
+    Materi edukasi tentang kekerasan dalam masyarakat.<br>
+    Dibuat untuk meningkatkan kesadaran dan kepedulian sosial.
+  </div>
+  <div class="footer-stamp">JANGAN DIAM</div>
+  <div class="footer-text">
+    Semua orang berhak merasa aman.<br>
+    Bersama kita bisa mengubahnya.
+  </div>
+</footer>
+
+<!-- TUGAS FOOTER -->
+<div style="
+  background: #050505;
+  border-top: 1px solid rgba(192,57,43,0.2);
+  padding: 24px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  text-align: center;
+">
+  <span style="
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #c0392b;
+    border: 1px solid rgba(192,57,43,0.3);
+    padding: 4px 10px;
+    font-family: 'Epilogue', sans-serif;
+  ">Tugas</span>
+  <span style="
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: #5a5652;
+    letter-spacing: 0.03em;
+  ">Kewarganegaraan</span>
+  <span style="color: rgba(192,57,43,0.4); font-size: 0.8rem;">—</span>
+  <span style="
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: #b8b4ae;
+  ">By Jery Putra Jaya</span>
+</div>
+
+<script>
+// --- PROGRESS BAR ---
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (scrolled / total * 100) + '%';
+});
+
+// --- HERO CANVAS ---
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() {
+  W = canvas.width = canvas.offsetWidth;
+  H = canvas.height = canvas.offsetHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const dots = Array.from({length: 60}, () => ({
+  x: Math.random() * 1200,
+  y: Math.random() * 900,
+  r: Math.random() * 1.2 + 0.2,
+  sx: (Math.random() - 0.5) * 0.4,
+  sy: (Math.random() - 0.5) * 0.4,
+  a: Math.random() * 0.3 + 0.05,
+}));
+
+function drawHero() {
+  ctx.clearRect(0, 0, W, H);
+  dots.forEach(d => {
+    d.x += d.sx; d.y += d.sy;
+    if (d.x < 0 || d.x > W) d.sx *= -1;
+    if (d.y < 0 || d.y > H) d.sy *= -1;
+    ctx.globalAlpha = d.a;
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawHero);
+}
+drawHero();
+
+// --- SCROLL REVEAL ---
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+reveals.forEach(r => obs.observe(r));
+</script>
+</body>
+</html>
